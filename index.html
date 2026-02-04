@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Education & Legislative Dashboard</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const XIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        );
+
+        const UnifiedDashboard = () => {
+            const [selectedState, setSelectedState] = useState(null);
+            const [viewMode, setViewMode] = useState('sessions'); // 'sessions' or 'programs'
+            const [sessionFilter, setSessionFilter] = useState('all');
+            const [programFilter, setProgramFilter] = useState('all');
+
+            const sessionData = {
+                'Indiana': { start: 'Dec 1, 2025', end: 'March 14', month: 'December', color: '#8b5cf6' },
+                'Massachusetts': { start: 'Jan 1', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'California': { start: 'Jan 5', end: 'Aug 31', month: 'January', color: '#3b82f6' },
+                'Ohio': { start: 'Jan 5', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'Mississippi': { start: 'Jan 6', end: 'April 5', month: 'January', color: '#3b82f6' },
+                'Kentucky': { start: 'Jan 6', end: 'April 15', month: 'January', color: '#3b82f6' },
+                'Pennsylvania': { start: 'Jan 6', end: 'Nov 30', month: 'January', color: '#3b82f6' },
+                'Rhode Island': { start: 'Jan 6', end: 'June 30', month: 'January', color: '#3b82f6' },
+                'Vermont': { start: 'Jan 6', end: 'May 8', month: 'January', color: '#3b82f6' },
+                'New York': { start: 'Jan 7', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'New Hampshire': { start: 'Jan 7', end: 'June 30', month: 'January', color: '#3b82f6' },
+                'Nebraska': { start: 'Jan 7', end: 'April 17', month: 'January', color: '#3b82f6' },
+                'Missouri': { start: 'Jan 7', end: 'May 15', month: 'January', color: '#3b82f6' },
+                'Maine': { start: 'Jan 7', end: 'April 15', month: 'January', color: '#3b82f6' },
+                'Georgia': { start: 'Jan 12', end: 'April 6', month: 'January', color: '#3b82f6' },
+                'Arizona': { start: 'Jan 12', end: 'April 25', month: 'January', color: '#3b82f6' },
+                'Iowa': { start: 'Jan 12', end: 'April 21', month: 'January', color: '#3b82f6' },
+                'Washington': { start: 'Jan 12', end: 'March 12', month: 'January', color: '#3b82f6' },
+                'Idaho': { start: 'Jan 12', end: 'April 10', month: 'January', color: '#3b82f6' },
+                'Kansas': { start: 'Jan 12', end: 'April 10', month: 'January', color: '#3b82f6' },
+                'New Jersey': { start: 'Jan 13', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'Wisconsin': { start: 'Jan 13', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'Delaware': { start: 'Jan 13', end: 'June 30', month: 'January', color: '#3b82f6' },
+                'South Dakota': { start: 'Jan 13', end: 'March 30', month: 'January', color: '#3b82f6' },
+                'Alabama': { start: 'Jan 13', end: 'March 27', month: 'January', color: '#3b82f6' },
+                'South Carolina': { start: 'Jan 13', end: 'May 7', month: 'January', color: '#3b82f6' },
+                'Tennessee': { start: 'Jan 13', end: 'April 24', month: 'January', color: '#3b82f6' },
+                'Florida': { start: 'Jan 13', end: 'March 13', month: 'January', color: '#3b82f6' },
+                'Illinois': { start: 'Jan 14', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'Michigan': { start: 'Jan 14', end: 'No scheduled end', month: 'January', color: '#3b82f6' },
+                'Virginia': { start: 'Jan 14', end: 'March 14', month: 'January', color: '#3b82f6' },
+                'West Virginia': { start: 'Jan 14', end: 'March 14', month: 'January', color: '#3b82f6' },
+                'Colorado': { start: 'Jan 14', end: 'May 13', month: 'January', color: '#3b82f6' },
+                'Maryland': { start: 'Jan 14', end: 'April 13', month: 'January', color: '#3b82f6' },
+                'Utah': { start: 'Jan 20', end: 'March 6', month: 'January', color: '#3b82f6' },
+                'Alaska': { start: 'Jan 20', end: 'May 20', month: 'January', color: '#3b82f6' },
+                'New Mexico': { start: 'Jan 20', end: 'Feb 19', month: 'January', color: '#3b82f6' },
+                'Hawaii': { start: 'Jan 21', end: 'May 8', month: 'January', color: '#3b82f6' },
+                'Oklahoma': { start: 'Feb 2', end: 'May 29', month: 'February', color: '#10b981' },
+                'Oregon': { start: 'Feb 2', end: 'March 9', month: 'February', color: '#10b981' },
+                'Connecticut': { start: 'Feb 4', end: 'May 6', month: 'February', color: '#10b981' },
+                'Wyoming': { start: 'Feb 9', end: 'March 6', month: 'February', color: '#10b981' },
+                'Minnesota': { start: 'Feb 17', end: 'May 18', month: 'February', color: '#10b981' },
+                'Louisiana': { start: 'March 9', end: 'June 1', month: 'March', color: '#f59e0b' },
+                'Arkansas': { start: 'April 8', end: 'May 7', month: 'April', color: '#ef4444' },
+                'North Carolina': { start: 'April 21', end: 'July 31', month: 'April', color: '#ef4444' },
+                'Montana': { start: 'No data', end: 'No data', month: 'No Data', color: '#d1d5db' },
+                'Nevada': { start: 'No data', end: 'No data', month: 'No Data', color: '#d1d5db' },
+                'North Dakota': { start: 'No data', end: 'No data', month: 'No Data', color: '#d1d5db' },
+                'Texas': { start: 'No data', end: 'No data', month: 'No Data', color: '#d1d5db' }
+            };
+
+            const programData = {
+                'California': [
+                    { name: 'California College Promise Program', type: 'Community College', eligibility: 'Resident, HS grad', costs: 'First dollar (enrollment fees)' }
+                ],
+                'Connecticut': [
+                    { name: 'Pledge to Advance Connecticut', type: 'Community College', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition)' }
+                ],
+                'Delaware': [
+                    { name: 'Student Excellence Equals Degree', type: 'Community College', eligibility: 'HS grad, GPA', costs: 'Last dollar (tuition)' }
+                ],
+                'Hawaii': [
+                    { name: 'Hawaii Promise Scholarship', type: 'Community College', eligibility: 'Resident', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Maine': [
+                    { name: 'Free College Scholarship', type: 'Community College', eligibility: 'HS grad (select years)', costs: 'Last dollar (tuition/fees)', note: 'Ending Class of 2025' }
+                ],
+                'Maryland': [
+                    { name: 'Community College Promise Scholarship', type: 'Community College', eligibility: 'HS grad, GPA, Income <$100k', costs: 'Last dollar (tuition/fees) up to $5k' }
+                ],
+                'Massachusetts': [
+                    { name: 'MassEducate', type: 'Community College', eligibility: 'Resident, citizen', costs: 'Last dollar (tuition/fees)' },
+                    { name: 'MassReconnect', type: 'Adult/Age Focused', eligibility: 'Resident, 25yrs+', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Michigan': [
+                    { name: 'Community College Guarantee', type: 'Community College', eligibility: 'Resident, citizen, HS grad', costs: 'Last dollar (tuition/fees)' },
+                    { name: 'Michigan Reconnect', type: 'Adult/Age Focused', eligibility: 'Resident, HS grad, 21yrs+', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Nevada': [
+                    { name: 'Nevada Promise Scholarship', type: 'Community College', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'New Hampshire': [
+                    { name: 'CCSNH Promise Program', type: 'Community College', eligibility: 'Pell eligible student', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'New Jersey': [
+                    { name: 'Community College Opportunity Grant', type: 'Community College', eligibility: 'Resident, income <$100k', costs: 'Last dollar (sliding scale)' },
+                    { name: 'Garden State Guarantee', type: 'University', eligibility: 'Resident, Income <$65k', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Oregon': [
+                    { name: 'Oregon Promise Grant', type: 'Community College', eligibility: 'Resident, HS grad, GPA, income SAI<$25K', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Rhode Island': [
+                    { name: 'Rhode Island Promise', type: 'Community College', eligibility: 'Resident, HS grad, 18 yrs old', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Tennessee': [
+                    { name: 'Tennessee Promise', type: 'Community College', eligibility: 'Resident, citizen, HS grad', costs: 'Last dollar (tuition/fees)' },
+                    { name: 'Tennessee Reconnect', type: 'Adult/Age Focused', eligibility: 'Resident, citizen, 23 yrs+', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Vermont': [
+                    { name: '802 Opportunity Grant', type: 'Community College', eligibility: 'Resident, income <$75k', costs: 'Last dollar (tuition)' }
+                ],
+                'Arizona': [
+                    { name: 'Arizona Promise Program', type: 'University', eligibility: 'Resident, GPA, Pell eligible', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Colorado': [
+                    { name: 'Colorado Promise', type: 'University', eligibility: 'Resident, Income <$90K', costs: 'Tax Credit for tuition/fees' }
+                ],
+                'Indiana': [
+                    { name: '21st Century Scholars', type: 'University', eligibility: 'Resident, citizen, GPA, income <$135K', costs: 'First dollar (tuition/fees)' }
+                ],
+                'Minnesota': [
+                    { name: 'North Star Promise', type: 'University', eligibility: 'Resident, income <$80k', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'New Mexico': [
+                    { name: 'New Mexico Opportunity Scholarship', type: 'University', eligibility: 'Resident', costs: 'First dollar (tuition/fees)' }
+                ],
+                'New York': [
+                    { name: 'Excelsior Scholarship', type: 'University', eligibility: 'Resident, Citizen, HS grad, Income <$125k', costs: 'Last dollar (tuition/fees)' },
+                    { name: 'New York State Opportunity Promise Scholarship', type: 'Adult/Age Focused', eligibility: 'Resident, 25-55 yrs', costs: 'Last dollar (tuition/fees/books)' }
+                ],
+                'Oklahoma': [
+                    { name: "Oklahoma's Promise", type: 'University', eligibility: 'Resident, income <$60k', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Utah': [
+                    { name: 'Utah Promise Grant', type: 'University', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Washington': [
+                    { name: 'Washington College Grant/Promise', type: 'University', eligibility: 'Resident, HS grad or adult, Income <$78.5k', costs: 'First dollar (tuition/fees)' }
+                ],
+                'West Virginia': [
+                    { name: 'Promise Scholarship', type: 'University', eligibility: 'Resident, GPA, Test score', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Arkansas': [
+                    { name: 'Arkansas Future Grant', type: 'Targeted Credential', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Georgia': [
+                    { name: 'Hope Grant', type: 'Targeted Credential', eligibility: 'Resident, citizen, GPA', costs: 'First dollar (tuition/fees)' }
+                ],
+                'Iowa': [
+                    { name: 'Future Ready Iowa Last Dollar Scholarship', type: 'Targeted Credential', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Kentucky': [
+                    { name: 'Work Ready Kentucky Scholarship', type: 'Targeted Credential', eligibility: 'Resident, citizen', costs: 'Last dollar (tuition/fees/books)' }
+                ],
+                'Louisiana': [
+                    { name: 'Louisiana GO Grant', type: 'Targeted Credential', eligibility: 'Resident, HS grad', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Mississippi': [
+                    { name: 'Workforce Upgrade Training Program', type: 'Targeted Credential', eligibility: 'Resident', costs: 'Last dollar (tuition)' }
+                ],
+                'Missouri': [
+                    { name: 'Fast Track Workforce Incentive Grant', type: 'Targeted Credential', eligibility: 'Resident, citizen', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Ohio': [
+                    { name: 'Choose Ohio First', type: 'Targeted Credential', eligibility: 'Resident, citizen, specific fields', costs: 'Last dollar (full tuition/fees)' }
+                ],
+                'South Carolina': [
+                    { name: 'SC Works Scholarship', type: 'Targeted Credential', eligibility: 'Resident, specific fields', costs: 'Last dollar (tuition/fees/books)' }
+                ],
+                'Virginia': [
+                    { name: 'Get Skilled, Get a Job, Give Back (G3)', type: 'Targeted Credential', eligibility: 'Resident, specific fields', costs: 'Last dollar (tuition/fees)' }
+                ],
+                'Wisconsin': [
+                    { name: 'Wisconsin Grant', type: 'Targeted Credential', eligibility: 'Resident, need-based', costs: 'Last dollar (varying amounts)' }
+                ]
+            };
+
+            const allStates = [
+                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware',
+                'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky',
+                'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
+                'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico',
+                'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania',
+                'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+                'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+            ];
+
+            const programTypes = [
+                { value: 'all', label: 'All Programs', color: '#3b82f6' },
+                { value: 'Community College', label: 'Community College', color: '#10b981' },
+                { value: 'University', label: 'University', color: '#8b5cf6' },
+                { value: 'Targeted Credential', label: 'Targeted Credential', color: '#f59e0b' },
+                { value: 'Adult/Age Focused', label: 'Adult/Age', color: '#ef4444' }
+            ];
+
+            const getStateColor = (state) => {
+                if (viewMode === 'sessions') {
+                    const session = sessionData[state];
+                    if (!session) return '#d1d5db';
+                    if (sessionFilter === 'all' || session.month === sessionFilter) {
+                        return session.color;
+                    }
+                    return '#e5e7eb';
+                } else {
+                    const programs = programData[state];
+                    if (!programs) return '#d1d5db';
+                    
+                    if (programFilter === 'all') {
+                        return '#3b82f6';
+                    }
+                    
+                    const hasType = programs.some(p => p.type === programFilter);
+                    return hasType ? programTypes.find(t => t.value === programFilter)?.color : '#e5e7eb';
+                }
+            };
+
+            const shouldHighlight = (state) => {
+                if (viewMode === 'sessions') {
+                    const session = sessionData[state];
+                    return session && (sessionFilter === 'all' || session.month === sessionFilter);
+                } else {
+                    const programs = programData[state];
+                    if (!programs) return false;
+                    return programFilter === 'all' || programs.some(p => p.type === programFilter);
+                }
+            };
+
+            const getProgramCount = (type) => {
+                if (type === 'all') {
+                    return Object.values(programData).reduce((sum, programs) => sum + programs.length, 0);
+                }
+                return Object.values(programData).reduce((sum, programs) => 
+                    sum + programs.filter(p => p.type === type).length, 0
+                );
+            };
+
+            const getStateCount = (type) => {
+                if (type === 'all') {
+                    return Object.keys(programData).length;
+                }
+                return Object.keys(programData).filter(state => 
+                    programData[state].some(p => p.type === type)
+                ).length;
+            };
+
+            return (
+                <div className="p-5 bg-gray-100 min-h-screen">
+                    <div className="max-width-7xl mx-auto">
+                        {/* Header with View Toggle */}
+                        <div className="bg-white border-2 border-gray-300 p-6 mb-5">
+                            <h1 className="text-3xl font-bold text-gray-800 mb-2">State Education & Legislative Dashboard</h1>
+                            <p className="text-gray-600 mb-5">Interactive visualization of 2026 legislative sessions and promise programs</p>
+                            
+                            <div className="flex gap-3 mb-4">
+                                <button
+                                    onClick={() => setViewMode('sessions')}
+                                    className={`px-6 py-3 text-base font-semibold rounded transition-all ${
+                                        viewMode === 'sessions' 
+                                            ? 'bg-blue-600 text-white shadow-md' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                                >
+                                    📅 Legislative Sessions
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('programs')}
+                                    className={`px-6 py-3 text-base font-semibold rounded transition-all ${
+                                        viewMode === 'programs' 
+                                            ? 'bg-blue-600 text-white shadow-md' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
+                                >
+                                    🎓 Promise Programs
+                                </button>
+                            </div>
+
+                            {/* Filters */}
+                            {viewMode === 'sessions' ? (
+                                <div>
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Filter by Session Start Month:</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button
+                                            onClick={() => setSessionFilter('all')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'all' 
+                                                    ? 'bg-blue-600 text-white border-blue-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            All Months
+                                        </button>
+                                        <button
+                                            onClick={() => setSessionFilter('December')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'December' 
+                                                    ? 'bg-purple-600 text-white border-purple-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Dec 2025 (1)
+                                        </button>
+                                        <button
+                                            onClick={() => setSessionFilter('January')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'January' 
+                                                    ? 'bg-blue-600 text-white border-blue-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Jan 2026 (29)
+                                        </button>
+                                        <button
+                                            onClick={() => setSessionFilter('February')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'February' 
+                                                    ? 'bg-green-600 text-white border-green-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Feb 2026 (5)
+                                        </button>
+                                        <button
+                                            onClick={() => setSessionFilter('March')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'March' 
+                                                    ? 'bg-yellow-600 text-white border-yellow-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Mar 2026 (1)
+                                        </button>
+                                        <button
+                                            onClick={() => setSessionFilter('April')}
+                                            className={`px-3 py-2 text-sm border ${
+                                                sessionFilter === 'April' 
+                                                    ? 'bg-red-600 text-white border-red-700' 
+                                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Apr 2026 (2)
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div>
+                                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Filter by Program Type:</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {programTypes.map(type => (
+                                            <button
+                                                key={type.value}
+                                                onClick={() => setProgramFilter(type.value)}
+                                                className={`px-3 py-2 text-sm border ${
+                                                    programFilter === type.value 
+                                                        ? 'bg-blue-600 text-white border-blue-700' 
+                                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {type.label} ({getStateCount(type.value)})
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Map Container */}
+                        <div className="bg-white border-2 border-gray-400 p-6 mb-5">
+                            <div className="mb-4">
+                                <h2 className="text-xl font-bold text-gray-800 mb-1">
+                                    {viewMode === 'sessions' ? '2026 State Legislature Sessions' : 'State Promise Programs'}
+                                </h2>
+                                <p className="text-sm text-gray-600">Click on any state to view details</p>
+                            </div>
+
+                            {viewMode === 'sessions' && (
+                                <div className="bg-blue-50 border border-blue-200 p-3 mb-4 rounded">
+                                    <p className="text-sm text-gray-700">
+                                        <strong>Note:</strong> Montana, Nevada, North Dakota, and Texas have no session dates provided for 2026.
+                                    </p>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-10 gap-2 mb-6">
+                                {allStates.map(state => {
+                                    const isHighlighted = shouldHighlight(state);
+                                    return (
+                                        <div
+                                            key={state}
+                                            onClick={() => setSelectedState(state)}
+                                            className="border-2 border-gray-800 p-2 text-center transition-all cursor-pointer"
+                                            style={{
+                                                backgroundColor: getStateColor(state),
+                                                opacity: isHighlighted ? 1 : 0.4,
+                                                filter: 'brightness(1)'
+                                            }}
+                                            onMouseEnter={(e) => (e.currentTarget.style.filter = 'brightness(1.1)')}
+                                            onMouseLeave={(e) => (e.currentTarget.style.filter = 'brightness(1)')}
+                                        >
+                                            <div className="font-bold text-xs text-gray-900">{state}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Legend */}
+                            {viewMode === 'sessions' ? (
+                                <div className="flex flex-wrap gap-4 justify-center text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#8b5cf6' }}></div>
+                                        <span>Dec 2025</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#3b82f6' }}></div>
+                                        <span>Jan 2026</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#10b981' }}></div>
+                                        <span>Feb 2026</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#f59e0b' }}></div>
+                                        <span>Mar 2026</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#ef4444' }}></div>
+                                        <span>Apr 2026</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#d1d5db' }}></div>
+                                        <span>No Data</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-wrap gap-4 justify-center text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#3b82f6' }}></div>
+                                        <span>All Programs</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#10b981' }}></div>
+                                        <span>Community College</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#8b5cf6' }}></div>
+                                        <span>University</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#f59e0b' }}></div>
+                                        <span>Targeted Credential</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400" style={{ backgroundColor: '#ef4444' }}></div>
+                                        <span>Adult/Age Focused</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-4 border border-gray-400 bg-gray-300"></div>
+                                        <span>No Programs</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* State Detail Panel */}
+                        {selectedState && (
+                            <div className="bg-white border-2 border-gray-400 p-5 mb-5">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h2 className="text-2xl font-bold text-gray-800">{selectedState}</h2>
+                                    <button
+                                        onClick={() => setSelectedState(null)}
+                                        className="text-gray-600 hover:text-gray-800"
+                                    >
+                                        <XIcon />
+                                    </button>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* Legislative Session Info */}
+                                    <div className="border-l-4 border-blue-600 pl-4">
+                                        <h3 className="font-bold text-lg text-gray-900 mb-3">📅 Legislative Session</h3>
+                                        {sessionData[selectedState] ? (
+                                            <div className="space-y-2 text-sm">
+                                                <p>
+                                                    <span className="font-semibold text-gray-700">Session Starts:</span>{' '}
+                                                    <span className="text-gray-900">{sessionData[selectedState].start}</span>
+                                                </p>
+                                                <p>
+                                                    <span className="font-semibold text-gray-700">Session Ends:</span>{' '}
+                                                    <span className="text-gray-900">{sessionData[selectedState].end}</span>
+                                                </p>
+                                                <p>
+                                                    <span className="font-semibold text-gray-700">Convening Month:</span>{' '}
+                                                    <span className="text-gray-900">{sessionData[selectedState].month}</span>
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500 italic">No session data available for 2026</p>
+                                        )}
+                                    </div>
+
+                                    {/* Promise Programs Info */}
+                                    <div className="border-l-4 border-purple-600 pl-4">
+                                        <h3 className="font-bold text-lg text-gray-900 mb-3">🎓 Promise Programs</h3>
+                                        {programData[selectedState] ? (
+                                            <div className="space-y-3">
+                                                {programData[selectedState].map((program, idx) => (
+                                                    <div key={idx} className="bg-gray-50 p-3 rounded border-l-4" style={{ 
+                                                        borderColor: programTypes.find(t => t.value === program.type)?.color || '#3b82f6'
+                                                    }}>
+                                                        <h4 className="font-bold text-sm text-gray-900 mb-1">{program.name}</h4>
+                                                        <p className="text-xs text-gray-700 mb-1">
+                                                            <span className="font-semibold">Type:</span> {program.type}
+                                                        </p>
+                                                        <p className="text-xs text-gray-700 mb-1">
+                                                            <span className="font-semibold">Eligibility:</span> {program.eligibility}
+                                                        </p>
+                                                        <p className="text-xs text-gray-700">
+                                                            <span className="font-semibold">Coverage:</span> {program.costs}
+                                                        </p>
+                                                        {program.note && (
+                                                            <p className="text-xs text-red-700 italic mt-1">
+                                                                <span className="font-semibold">Note:</span> {program.note}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500 italic">No promise programs available</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Statistics */}
+                        <div className="grid md:grid-cols-2 gap-5">
+                            {/* Session Statistics */}
+                            <div className="bg-white border-2 border-gray-400 p-5">
+                                <h3 className="text-lg font-bold text-gray-800 mb-3">📊 Session Statistics</h3>
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b-2 border-gray-400">
+                                            <th className="text-left py-2">Month</th>
+                                            <th className="text-right py-2">States</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">December 2025</td>
+                                            <td className="text-right py-2 font-semibold">1</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">January 2026</td>
+                                            <td className="text-right py-2 font-semibold">29</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">February 2026</td>
+                                            <td className="text-right py-2 font-semibold">5</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">March 2026</td>
+                                            <td className="text-right py-2 font-semibold">1</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">April 2026</td>
+                                            <td className="text-right py-2 font-semibold">2</td>
+                                        </tr>
+                                        <tr className="font-bold">
+                                            <td className="py-2">TOTAL</td>
+                                            <td className="text-right py-2">38</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Program Statistics */}
+                            <div className="bg-white border-2 border-gray-400 p-5">
+                                <h3 className="text-lg font-bold text-gray-800 mb-3">📊 Program Statistics</h3>
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b-2 border-gray-400">
+                                            <th className="text-left py-2">Program Type</th>
+                                            <th className="text-right py-2">States</th>
+                                            <th className="text-right py-2">Programs</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">Community College</td>
+                                            <td className="text-right py-2 font-semibold">{getStateCount('Community College')}</td>
+                                            <td className="text-right py-2 font-semibold">{getProgramCount('Community College')}</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">University</td>
+                                            <td className="text-right py-2 font-semibold">{getStateCount('University')}</td>
+                                            <td className="text-right py-2 font-semibold">{getProgramCount('University')}</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">Targeted Credential</td>
+                                            <td className="text-right py-2 font-semibold">{getStateCount('Targeted Credential')}</td>
+                                            <td className="text-right py-2 font-semibold">{getProgramCount('Targeted Credential')}</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-200">
+                                            <td className="py-2">Adult/Age Focused</td>
+                                            <td className="text-right py-2 font-semibold">{getStateCount('Adult/Age Focused')}</td>
+                                            <td className="text-right py-2 font-semibold">{getProgramCount('Adult/Age Focused')}</td>
+                                        </tr>
+                                        <tr className="font-bold">
+                                            <td className="py-2">TOTAL</td>
+                                            <td className="text-right py-2">{getStateCount('all')}</td>
+                                            <td className="text-right py-2">{getProgramCount('all')}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<UnifiedDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
